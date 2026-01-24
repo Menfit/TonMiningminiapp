@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Mining - Telegram Mini App</title>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛏️</text></svg>">
+</head>
+<body>
+    <!-- Main Home Page -->
+    <div class="container" id="homePage">
+        <!-- Header Section - Compact Version -->
+        <header class="app-header compact">
+            <div class="logo">
+                <i class="fas fa-gem"></i>
+                <h1>VIP Mining</h1>
+            </div>
+            <div class="user-section compact" id="userSection">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info compact">
+                    <div class="username" id="username">Loading...</div>
+                    <div class="user-id" id="userId">ID: ---</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-header">
+                <span><i class="fas fa-wallet"></i> Your Balance</span>
+                <span class="rank-badge" id="rankBadge">Beginner</span>
+            </div>
+            <div class="balance-amount" id="balance">100</div>
+            <div class="balance-sub">Mining Points</div>
+            <div class="balance-stats">
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <span id="referrals">0 Referrals</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span id="totalEarned">100 Total</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mining Section -->
+        <div class="mining-section">
+            <div class="mining-header">
+                <h3><i class="fas fa-hard-hat"></i> Mining Station</h3>
+                <div class="mining-power" id="miningPower">
+                    <i class="fas fa-bolt"></i> Power: 10/hour
+                </div>
+            </div>
+            <button class="mine-btn" id="mineBtn">
+                <div class="mine-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <div class="mine-text">
+                    <div class="mine-title">Start Mining</div>
+                    <div class="mine-reward">+<span id="rewardAmount">1</span> point</div>
+                </div>
+                <div class="mine-cooldown" id="cooldownTimer"></div>
+            </button>
+            <div class="mining-tip">
+                <i class="fas fa-lightbulb"></i> Click every 5 seconds for maximum profit
+            </div>
+        </div>
+
+        <!-- Referral System - Simplified -->
+        <div class="referral-section">
+            <div class="section-header">
+                <h3><i class="fas fa-share-alt"></i> Referral Program</h3>
+                <div class="referral-bonus">
+                    <i class="fas fa-gift"></i> +25 points per referral
+                </div>
+            </div>
+            
+            <div class="referral-stats">
+                <div class="ref-stat">
+                    <div class="ref-stat-value" id="refCount">0</div>
+                    <div class="ref-stat-label">Total Referrals</div>
+                </div>
+                <div class="ref-stat">
+                    <div class="ref-stat-value" id="refEarned">0</div>
+                    <div class="ref-stat-label">Points Earned</div>
+                </div>
+                <div class="ref-stat">
+                    <div class="ref-stat-value" id="refRank">Beginner</div>
+                    <div class="ref-stat-label">Your Rank</div>
+                </div>
+            </div>
+
+            <!-- Referral Link - Simplified -->
+            <div class="referral-link-container">
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <input type="text" 
+                           class="referral-input" 
+                           id="referralLink" 
+                           value="Generating referral link..." 
+                           readonly>
+                    <button class="copy-btn" id="copyBtn">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <div class="referral-actions">
+                    <button class="action-btn" id="shareBtn">
+                        <i class="fab fa-telegram"></i> Share on Telegram
+                    </button>
+                </div>
+            </div>
+
+            <!-- Simple Referral Message -->
+            <div class="referral-info simple">
+                <h4><i class="fas fa-info-circle"></i> Share Your Unique Link</h4>
+                <p>Copy and share your referral link to get +25 points</p>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h4><i class="fas fa-trophy"></i> Rank Progress</h4>
+                <div class="next-rank" id="nextRank">Next: Professional (200 points)</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-stats">
+                <div class="progress-stat">
+                    <span>Current:</span>
+                    <span id="currentPoints">100</span>
+                </div>
+                <div class="progress-stat">
+                    <span>Target:</span>
+                    <span id="targetPoints">200</span>
+                </div>
+                <div class="progress-stat">
+                    <span>Remaining:</span>
+                    <span id="remainingPoints">100</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 🆕 New Pages - 2024-01-15 -->
+    <!-- =========================================== -->
+
+    <!-- Wallet Page -->
+    <div id="walletPage" class="page hidden">
+        <div class="page-header">
+            <div class="back-btn" onclick="window.switchPageFixed('home'); return false;">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h2><i class="fas fa-wallet"></i> Wallet</h2>
+        </div>
+        
+        <div class="wallet-content">
+            <div class="wallet-balance">
+                <div class="balance-card">
+                    <h3><i class="fas fa-coins"></i> Points Balance</h3>
+                    <div class="amount" id="walletPoints">100</div>
+                    <div class="currency">points</div>
+                </div>
+                
+                <div class="balance-card">
+                    <h3><i class="fab fa-bitcoin"></i> Satoshi Balance</h3>
+                    <div class="amount" id="walletSatoshi">0</div>
+                    <div class="currency">satoshi</div>
+                </div>
+            </div>
+            
+            <div class="wallet-actions">
+                <div class="action-card" onclick="showComingSoon()">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h4>Convert Points</h4>
+                    <p>Convert points to satoshi</p>
+                </div>
+                
+                <div class="action-card" onclick="showComingSoon()">
+                    <i class="fas fa-paper-plane"></i>
+                    <h4>Withdraw Request</h4>
+                    <p>Withdraw balance to wallet</p>
+                </div>
+                
+                <div class="action-card" onclick="showComingSoon()">
+                    <i class="fas fa-download"></i>
+                    <h4>Deposit Request</h4>
+                    <p>Deposit satoshi to account</p>
+                </div>
+            </div>
+            
+            <div class="wallet-notice">
+                <i class="fas fa-info-circle"></i>
+                <p>🚀 Features under development! Coming soon.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earning Page -->
+    <div id="earningPage" class="page hidden">
+        <div class="page-header">
+            <div class="back-btn" onclick="window.switchPageFixed('home'); return false;">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h2><i class="fas fa-chart-line"></i> Earning</h2>
+        </div>
+        
+        <div class="earning-content">
+            <div class="coming-soon">
+                <div class="rocket-animation">
+                    🚀
+                </div>
+                <h3>Coming Soon!</h3>
+                <p>Working on new earning features</p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-ad"></i>
+                        <span>Watch Ads</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-tasks"></i>
+                        <span>Daily Tasks</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-gift"></i>
+                        <span>Exclusive Offers</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>Contests & Rewards</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- 🆕 Bottom Navigation - FIXED VERSION -->
+    <!-- =========================================== -->
+
+    <div id="bottomNav" class="bottom-nav">
+        <div class="nav-item active" onclick="window.switchPageFixed('home'); return false;">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="window.switchPageFixed('earning'); return false;">
+            <i class="fas fa-chart-line"></i>
+            <span>Earning</span>
+        </div>
+        <div class="nav-item" onclick="window.switchPageFixed('wallet'); return false;">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="app.js"></script>
+    
+    <!-- Helper Functions - NAVIGATION FIX ONLY -->
+    <script>
+        // Navigation System - Fixed Version
+        // This only fixes page switching, doesn't touch anything else
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🚀 Initializing navigation system...");
+            
+            // Initialize navigation after app.js loads
+            setTimeout(function() {
+                setupFixedNavigation();
+                checkUrlForReferral();
+            }, 500);
+        });
+        
+        function setupFixedNavigation() {
+            console.log("🎯 Setting up fixed navigation...");
+            
+            // Get all navigation items
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // Remove ALL existing click listeners first by cloning
+            navItems.forEach(item => {
+                const newItem = item.cloneNode(true);
+                item.parentNode.replaceChild(newItem, item);
+            });
+            
+            // Get fresh references after clone
+            const freshNavItems = document.querySelectorAll('.nav-item');
+            
+            // Add click listeners with proper delegation
+            freshNavItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Get page name from text
+                    let pageName = 'home';
+                    const text = this.querySelector('span').textContent.toLowerCase();
+                    
+                    if (text.includes('wallet')) {
+                        pageName = 'wallet';
+                    } else if (text.includes('earning')) {
+                        pageName = 'earning';
+                    } else {
+                        pageName = 'home';
+                    }
+                    
+                    console.log("🔄 Switching to:", pageName);
+                    
+                    // Use the FIXED function from app.js
+                    if (window.switchPageFixed) {
+                        window.switchPageFixed(pageName);
+                    } else {
+                        // Fallback to simple switching
+                        simplePageSwitch(pageName);
+                    }
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    return false;
+                });
+            });
+            
+            console.log("✅ Fixed navigation setup complete");
+        }
+        
+        function simplePageSwitch(pageName) {
+            console.log("🔄 Simple page switch to:", pageName);
+            
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+                page.classList.add('hidden');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Activate clicked nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const text = item.querySelector('span').textContent.toLowerCase();
+                if ((pageName === 'home' && text.includes('home')) ||
+                    (pageName === 'wallet' && text.includes('wallet')) ||
+                    (pageName === 'earning' && text.includes('earning'))) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Show requested page
+            if (pageName === 'home') {
+                document.querySelector('.container').classList.remove('hidden');
+                document.querySelector('.container').classList.add('active');
+                
+                // 🔥 CRITICAL: Reinitialize mining button when returning to home
+                setTimeout(() => {
+                    if (window.reinitializeEventListeners) {
+                        window.reinitializeEventListeners();
+                    }
+                }, 100);
+                
+            } else if (pageName === 'wallet') {
+                document.getElementById('walletPage').classList.remove('hidden');
+                document.getElementById('walletPage').classList.add('active');
+                document.querySelector('.container').classList.add('hidden');
+                
+                // Update wallet balance
+                if (window.updateWalletBalanceDirect) {
+                    window.updateWalletBalanceDirect();
+                }
+                
+            } else if (pageName === 'earning') {
+                document.getElementById('earningPage').classList.remove('hidden');
+                document.getElementById('earningPage').classList.add('active');
+                document.querySelector('.container').classList.add('hidden');
+            }
+        }
+        
+        function checkUrlForReferral() {
+            // Check for referral code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerCode = urlParams.get('startapp') || 
+                               urlParams.get('ref') || 
+                               urlParams.get('start');
+            
+            if (referrerCode) {
+                console.log("🔗 URL referral code detected:", referrerCode);
+                localStorage.setItem('pending_referral', referrerCode);
+            }
+        }
+        
+        function showComingSoon() {
+            if (window.showMessage) {
+                window.showMessage('🚀 This feature is under development!', 'info');
+            } else {
+                console.log('🚀 This feature is under development!');
+            }
+        }
+        
+        // Make sure home page is active on load
+        window.addEventListener('load', function() {
+            // Activate home nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const text = item.querySelector('span').textContent.toLowerCase();
+                if (text.includes('home')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+        
+        // Make functions available globally
+        window.showComingSoon = showComingSoon;
+        
+        console.log("✅ Navigation system loaded (FIXED VERSION)");
+    </script>
+</body>
+</html>
