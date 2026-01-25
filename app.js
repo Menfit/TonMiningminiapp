@@ -37,7 +37,7 @@ if (typeof firebase !== 'undefined') {
     }
 }
 
-// User Data - مع إضافة flags للتحقق
+// User Data - with verification flags
 let userData = {
     balance: 100,
     referrals: 0,
@@ -54,18 +54,19 @@ let userData = {
     lastSaveTime: 0
 };
 
-// Configuration
+// Configuration - UPDATED FOR 4 HOURS
 const CONFIG = {
-    MINE_COOLDOWN: 5000,
+    MINE_COOLDOWN: 14400000, // 4 hours (4 × 60 × 60 × 1000) = 14,400,000 ms
+    MINE_REWARD: 250, // Changed from 1 to 250
     REFERRAL_REWARD: 25,
     REFERRER_REWARD: 25,
     
     RANKS: [
-        { name: 'Beginner', min: 0, max: 199, reward: 1, power: '10/hour' },
-        { name: 'Professional', min: 200, max: 499, reward: 2, power: '25/hour' },
-        { name: 'Expert', min: 500, max: 999, reward: 3, power: '50/hour' },
-        { name: 'VIP', min: 1000, max: 9999, reward: 5, power: '100/hour' },
-        { name: 'Legend', min: 10000, max: Infinity, reward: 10, power: '200/hour' }
+        { name: 'Beginner', min: 0, max: 199, reward: 250, power: '250/4h' },
+        { name: 'Professional', min: 200, max: 499, reward: 500, power: '500/4h' },
+        { name: 'Expert', min: 500, max: 999, reward: 750, power: '750/4h' },
+        { name: 'VIP', min: 1000, max: 9999, reward: 1250, power: '1250/4h' },
+        { name: 'Legend', min: 10000, max: Infinity, reward: 2500, power: '2500/4h' }
     ]
 };
 
@@ -83,10 +84,10 @@ async function initApp() {
         // Cache DOM elements
         cacheElements();
         
-        // Setup user أولاً
+        // Setup user first
         await setupUser();
         
-        // Load user data ثانياً
+        // Load user data second
         await loadUserData();
         
         // Setup event listeners
@@ -106,7 +107,7 @@ async function initApp() {
         
         console.log("✅ App ready! Balance:", userData.balance, "User ID:", userData.userId);
         
-        // إظهار رسالة الترحيب
+        // Show welcome message
         setTimeout(() => {
             showMessage(`💰 Welcome ${userData.username}! Balance: ${userData.balance} points`, 'success');
         }, 1000);
@@ -124,8 +125,7 @@ function cacheElements() {
         'rewardAmount', 'referralLink', 'copyBtn', 'miningPower',
         'refCount', 'refEarned', 'refRank', 'progressFill',
         'nextRank', 'currentPoints', 'targetPoints', 'remainingPoints',
-        'connectionStatus', 'cooldownTimer', 'shareBtn', 'whatsappBtn',
-        'helpBtn', 'statsBtn', 'refreshBtn'
+        'connectionStatus', 'cooldownTimer', 'shareBtn'
     ];
     
     elementIds.forEach(id => {
@@ -136,7 +136,7 @@ function cacheElements() {
 }
 
 // ============================================
-// User Management - الحل الجديد
+// User Management - New Solution
 // ============================================
 
 async function setupUser() {
@@ -217,9 +217,9 @@ function updateUserUI() {
 
 function generateReferralLink() {
     if (userData.referralCode) {
-        return `https://t.me/VIPMainingPROBot/PRO?startapp=${userData.referralCode}`;
+        return `http://t.me/MiningWealthbot/PRO?startapp=${userData.referralCode}`;
     }
-    return 'https://t.me/VIPMainingPROBot/PRO';
+    return 'http://t.me/MiningWealthbot/PRO';
 }
 
 function updateReferralLink() {
@@ -232,7 +232,7 @@ function updateReferralLink() {
 }
 
 // ============================================
-// Storage System - الحل الحاسم
+// Storage System - Critical Solution
 // ============================================
 
 async function loadUserData() {
@@ -242,21 +242,21 @@ async function loadUserData() {
         const storageKey = `vip_mining_${userData.userId}`;
         console.log("🔍 Looking for key:", storageKey);
         
-        // تحميل من localStorage
+        // Load from localStorage
         const savedData = localStorage.getItem(storageKey);
         
         if (savedData) {
             console.log("✅ Found saved data");
             const parsedData = JSON.parse(savedData);
             
-            // 🔥 هذا هو الحل الحاسم: تحميل الرصيد أولاً
+            // 🔥 This is the critical solution: load balance first
             if (parsedData.balance !== undefined && parsedData.balance !== null) {
                 const loadedBalance = Number(parsedData.balance);
                 console.log("💰 Loading balance from storage:", loadedBalance);
                 userData.balance = loadedBalance;
             }
             
-            // تحميل باقي البيانات
+            // Load other data
             if (parsedData.totalEarned !== undefined) {
                 userData.totalEarned = Number(parsedData.totalEarned);
             }
@@ -289,11 +289,11 @@ async function loadUserData() {
             
         } else {
             console.log("📝 No saved data found, creating new user");
-            // حفظ البيانات الابتدائية فقط عند أول مرة
+            // Save initial data only on first time
             saveUserData();
         }
         
-        // تحميل من Firebase
+        // Load from Firebase
         if (db) {
             await loadUserFromFirebase();
         }
@@ -302,7 +302,7 @@ async function loadUserData() {
         
     } catch (error) {
         console.error("❌ Error loading user data:", error);
-        // في حالة الخطأ، احفظ البيانات الحالية
+        // In case of error, save current data
         saveUserData();
     }
 }
@@ -334,10 +334,10 @@ function saveUserData() {
         
         console.log("💾 Saving data - Balance:", userData.balance, "Key:", storageKey);
         
-        // حفظ في localStorage
+        // Save to localStorage
         localStorage.setItem(storageKey, JSON.stringify(dataToSave));
         
-        // التحقق من الحفظ
+        // Verify save
         const verifyData = localStorage.getItem(storageKey);
         if (verifyData) {
             const parsed = JSON.parse(verifyData);
@@ -346,7 +346,7 @@ function saveUserData() {
             console.error("❌ Failed to save to localStorage!");
         }
         
-        // حفظ في Firebase
+        // Save to Firebase
         if (db) {
             saveUserToFirebase();
         }
@@ -408,7 +408,7 @@ async function loadUserFromFirebase() {
         if (userSnap.exists) {
             const firebaseData = userSnap.data();
             
-            // أخذ القيمة الأعلى من Firebase والمحلية
+            // Take the higher value from Firebase and local
             if (firebaseData.balance !== undefined && firebaseData.balance > userData.balance) {
                 console.log("📈 Updating balance from Firebase:", firebaseData.balance);
                 userData.balance = firebaseData.balance;
@@ -457,7 +457,7 @@ function saveUserToFirebase() {
 }
 
 // ============================================
-// Referral Processing
+// Referral Processing - FIXED VERSION
 // ============================================
 
 function checkForReferral() {
@@ -519,11 +519,11 @@ async function processReferral(referralCode) {
                     return;
                 }
                 
-                // مكافأة المحال (المستخدم الجديد)
+                // Reward for referred user (new user) - ONLY 25 points
                 userData.balance += CONFIG.REFERRAL_REWARD;
                 userData.totalEarned += CONFIG.REFERRAL_REWARD;
                 
-                // مكافأة المحيل
+                // Reward for referrer - 25 points
                 await referrerDoc.ref.update({
                     referrals: firebase.firestore.FieldValue.increment(1),
                     referralEarnings: firebase.firestore.FieldValue.increment(CONFIG.REFERRER_REWARD),
@@ -531,12 +531,12 @@ async function processReferral(referralCode) {
                     totalEarned: firebase.firestore.FieldValue.increment(CONFIG.REFERRER_REWARD)
                 });
                 
-                // تحديث المستخدم الحالي
+                // Update current user - ONLY set referredBy, NO bonus or referral increment
                 userData.referredBy = referralCode;
-                userData.referrals += 1;
-                userData.referralEarnings += CONFIG.REFERRER_REWARD;
+                // ❌❌❌ لا نزيد userData.referrals هنا - هذا للمستخدم الجديد
+                // ❌❌❌ لا نزيد userData.referralEarnings هنا - هذه مكافأة للمُحيل
                 
-                // حفظ فوري
+                // Immediate save
                 saveUserData();
                 updateUI();
                 
@@ -551,15 +551,15 @@ async function processReferral(referralCode) {
         
         // Fallback to local storage
         userData.referredBy = referralCode;
-        userData.balance += CONFIG.REFERRAL_REWARD + CONFIG.REFERRER_REWARD;
-        userData.totalEarned += CONFIG.REFERRAL_REWARD + CONFIG.REFERRER_REWARD;
-        userData.referralEarnings += CONFIG.REFERRER_REWARD;
+        // For local storage fallback: new user gets 25 points
+        userData.balance += CONFIG.REFERRAL_REWARD; // فقط 25 نقطة للمستخدم الجديد
+        userData.totalEarned += CONFIG.REFERRAL_REWARD;
+        // ❌❌❌ لا نزيد referralEarnings هنا لأنها للمُحيل
         
         saveUserData();
         updateUI();
         
-        const totalBonus = CONFIG.REFERRAL_REWARD + CONFIG.REFERRER_REWARD;
-        showMessage(`🎉 Referral recorded! +${totalBonus} total points`, 'success');
+        showMessage(`🎉 Referral recorded! You got +${CONFIG.REFERRAL_REWARD} points`, 'success');
         
         console.log("📝 Referral recorded (local storage)");
         return true;
@@ -592,7 +592,7 @@ async function logReferralEvent(referrerId, referredId, referralCode) {
 }
 
 // ============================================
-// Mining System
+// Mining System - UPDATED FOR 4 HOURS
 // ============================================
 
 function minePoints() {
@@ -607,8 +607,8 @@ function minePoints() {
     const timeSinceLastMine = now - userData.lastMineTime;
     
     if (timeSinceLastMine < CONFIG.MINE_COOLDOWN) {
-        const secondsLeft = Math.ceil((CONFIG.MINE_COOLDOWN - timeSinceLastMine) / 1000);
-        showMessage(`⏳ Wait ${secondsLeft} seconds`, 'warning');
+        const hoursLeft = Math.ceil((CONFIG.MINE_COOLDOWN - timeSinceLastMine) / (1000 * 60 * 60));
+        showMessage(`⏳ Wait ${hoursLeft} hours`, 'warning');
         return;
     }
     
@@ -617,20 +617,26 @@ function minePoints() {
     
     console.log("📈 Before mining - Balance:", userData.balance);
     
-    // تحديث الرصيد
+    // Update balance
     userData.balance += reward;
     userData.totalEarned += reward;
     userData.lastMineTime = now;
     
     console.log("📈 After mining - Balance:", userData.balance);
     
-    // حفظ فوري
+    // Animate belt emptying
+    animateBeltEmpty();
+    
+    // Immediate save
     saveUserData();
     updateUI();
     animateMineButton(reward);
     
     showMessage(`⛏️ +${reward} points! Total: ${userData.balance}`, 'success');
     checkRankUp();
+    
+    // Update belt immediately
+    setTimeout(updateEnergyBelt, 100);
 }
 
 function animateMineButton(reward) {
@@ -644,36 +650,99 @@ function animateMineButton(reward) {
             <i class="fas fa-hammer"></i>
         </div>
         <div class="mine-text">
-            <div class="mine-title">Mined!</div>
+            <div class="mine-title">Claimed!</div>
             <div class="mine-reward">+${reward} points</div>
+            <div class="mine-subtitle">Come back in 4 hours</div>
         </div>
-        <div class="mine-cooldown" id="cooldownTimer">5s</div>
+        <div class="mine-cooldown" id="cooldownTimer">4h</div>
     `;
     
     btn.disabled = true;
     btn.style.opacity = '0.7';
     
-    let secondsLeft = 5;
-    
-    const updateTimer = () => {
-        const timerElement = btn.querySelector('.mine-cooldown');
-        if (timerElement) {
-            timerElement.textContent = `${secondsLeft}s`;
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.innerHTML = originalHTML;
+        // Reattach event listener
+        if (elements.mineBtn) {
+            elements.mineBtn.addEventListener('click', minePoints);
         }
-        
-        secondsLeft--;
-        
-        if (secondsLeft >= 0) {
-            setTimeout(updateTimer, 1000);
-        } else {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.innerHTML = originalHTML;
-            btn.addEventListener('click', minePoints);
-        }
-    };
+    }, 2000);
+}
+
+// ============================================
+// Energy Belt System - NEW
+// ============================================
+
+function updateEnergyBelt() {
+    const energyBelt = document.getElementById('energyBelt');
+    const beltFill = document.getElementById('beltFill');
+    const beltKnob = document.getElementById('beltKnob');
+    const mineBtn = document.getElementById('mineBtn');
+    const cooldownTimer = document.getElementById('cooldownTimer');
     
-    updateTimer();
+    if (!energyBelt || !beltFill || !beltKnob || !mineBtn) return;
+    
+    const now = Date.now();
+    const timeSinceLastMine = now - userData.lastMineTime;
+    const cooldown = CONFIG.MINE_COOLDOWN;
+    
+    // Calculate fill percentage (0 to 100)
+    let fillPercentage = 0;
+    
+    if (userData.lastMineTime > 0) {
+        fillPercentage = Math.min((timeSinceLastMine / cooldown) * 100, 100);
+    } else {
+        fillPercentage = 100; // First time, ready immediately
+    }
+    
+    // Update visual elements
+    beltFill.style.width = `${fillPercentage}%`;
+    beltKnob.style.left = `${fillPercentage}%`;
+    
+    // Check if ready
+    const isReady = timeSinceLastMine >= cooldown || userData.lastMineTime === 0;
+    
+    if (isReady) {
+        // Ready to claim
+        energyBelt.classList.add('belt-ready');
+        energyBelt.classList.remove('belt-emptying');
+        mineBtn.classList.add('mine-ready');
+        mineBtn.disabled = false;
+        
+        if (cooldownTimer) {
+            cooldownTimer.textContent = 'READY';
+            cooldownTimer.style.color = '#22c55e';
+            cooldownTimer.style.background = 'rgba(34, 197, 94, 0.1)';
+        }
+    } else {
+        // Waiting
+        energyBelt.classList.remove('belt-ready');
+        mineBtn.classList.remove('mine-ready');
+        mineBtn.disabled = true;
+        
+        // Update cooldown timer
+        if (cooldownTimer) {
+            const timeLeft = cooldown - timeSinceLastMine;
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            
+            cooldownTimer.textContent = `${hours}h ${minutes}m`;
+            cooldownTimer.style.color = '#ef4444';
+            cooldownTimer.style.background = 'rgba(239, 68, 68, 0.1)';
+        }
+    }
+}
+
+function animateBeltEmpty() {
+    const energyBelt = document.getElementById('energyBelt');
+    if (energyBelt) {
+        energyBelt.classList.add('belt-emptying');
+        setTimeout(() => {
+            energyBelt.classList.remove('belt-emptying');
+        }, 1000);
+    }
 }
 
 // ============================================
@@ -689,38 +758,19 @@ function setupEventListeners() {
         console.log("✅ Mine button listener added");
     }
     
-    // Copy referral link
+    // Copy button
     if (elements.copyBtn) {
         elements.copyBtn.addEventListener('click', copyReferralLink);
         console.log("✅ Copy button listener added");
     }
     
-    // Share on Telegram
+    // Share button
     if (elements.shareBtn) {
         elements.shareBtn.addEventListener('click', shareOnTelegram);
-        console.log("✅ Telegram share button added");
+        console.log("✅ Share button listener added");
     }
     
-    // Share on WhatsApp
-    if (elements.whatsappBtn) {
-        elements.whatsappBtn.addEventListener('click', shareOnWhatsApp);
-        console.log("✅ WhatsApp share button added");
-    }
-    
-    // Help button
-    if (elements.helpBtn) {
-        elements.helpBtn.addEventListener('click', showHelp);
-    }
-    
-    // Stats button
-    if (elements.statsBtn) {
-        elements.statsBtn.addEventListener('click', showStatistics);
-    }
-    
-    // Refresh button
-    if (elements.refreshBtn) {
-        elements.refreshBtn.addEventListener('click', refreshPage);
-    }
+    console.log("✅ Event listeners setup complete");
 }
 
 function copyReferralLink() {
@@ -744,22 +794,12 @@ function copyReferralLink() {
 
 function shareOnTelegram() {
     const refLink = generateReferralLink();
-    const shareText = `🚀 *Join VIP Mining PRO!*\n\n⛏️ *Mine points every 5 seconds*\n👥 *Get +25 BONUS points with my link*\n💰 *Earn 25 points for each referral*\n\n👉 ${refLink}\n\n💎 *Start earning now!* @VIPMainingPROBot`;
+    const shareText = `🚀 *Join VIP Mining Wealth PRO!*\n\n⛏️ *Mine 250 points every 4 hours*\n👥 *Get +25 BONUS points with my link*\n💰 *Earn 25 points for each referral*\n\n👉 ${refLink}\n\n💎 *Start earning now!* @VIPMainingPROBot`;
     
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(shareText)}`;
     
     window.open(shareUrl, '_blank');
     showMessage('📱 Opening Telegram...', 'info');
-}
-
-function shareOnWhatsApp() {
-    const refLink = generateReferralLink();
-    const shareText = `🚀 *VIP Mining PRO* 🪙\n\nJoin and earn FREE points!\n⛏️ Mine every 5 seconds\n🎁 +25 BONUS with my link\n👥 Earn 25 per referral\n\n${refLink}\n\nStart now and level up! 🏆`;
-    
-    const shareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-    
-    window.open(shareUrl, '_blank');
-    showMessage('💚 Opening WhatsApp...', 'info');
 }
 
 // ============================================
@@ -792,7 +832,7 @@ function updateUI() {
     }
     
     if (elements.miningPower) {
-        elements.miningPower.innerHTML = `<i class="fas fa-bolt"></i> Power: ${currentRank.power}`;
+        elements.miningPower.innerHTML = `<i class="fas fa-bolt"></i> Yield: ${currentRank.power}`;
     }
     
     // Update referral statistics
@@ -813,6 +853,12 @@ function updateUI() {
     
     // Update referral link
     updateReferralLink();
+    
+    // Update wallet balance immediately
+    updateWalletBalanceDirect();
+    
+    // Update energy belt
+    updateEnergyBelt();
 }
 
 function updateProgress() {
@@ -877,6 +923,106 @@ function updateConnectionStatus() {
 }
 
 // ============================================
+// Instant Wallet Update System
+// ============================================
+
+function updateWalletBalanceDirect() {
+    const walletPoints = document.getElementById('walletPoints');
+    if (walletPoints) {
+        walletPoints.textContent = userData.balance.toLocaleString();
+        console.log("💰 Wallet updated directly:", userData.balance);
+    }
+}
+
+// ============================================
+// Navigation System
+// ============================================
+
+function switchPageFixed(pageName) {
+    console.log("🔄 Switching to page:", pageName);
+    
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+        page.classList.add('hidden');
+    });
+    
+    // Remove active from all icons
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Show requested page and activate icon
+    if (pageName === 'home') {
+        document.querySelector('.container').classList.remove('hidden');
+        document.querySelector('.container').classList.add('active');
+        
+        // Reinitialize event listeners when returning to home
+        setTimeout(() => {
+            reinitializeEventListeners();
+        }, 100);
+        
+        // Update UI
+        updateUI();
+        
+        // Activate home icon
+        const homeIcons = document.querySelectorAll('[onclick*="switchPage(\'home\')"], [onclick*="switchPageFixed(\'home\')"]');
+        if (homeIcons.length > 0) {
+            homeIcons[0].classList.add('active');
+        }
+        
+    } else if (pageName === 'wallet') {
+        document.getElementById('walletPage').classList.remove('hidden');
+        document.getElementById('walletPage').classList.add('active');
+        
+        // Activate wallet icon
+        const walletIcons = document.querySelectorAll('[onclick*="switchPage(\'wallet\')"], [onclick*="switchPageFixed(\'wallet\')"]');
+        if (walletIcons.length > 0) {
+            walletIcons[0].classList.add('active');
+        }
+        
+        document.querySelector('.container').classList.add('hidden');
+        
+        // Update wallet balance
+        updateWalletBalanceDirect();
+        
+    } else if (pageName === 'earning') {
+        document.getElementById('earningPage').classList.remove('hidden');
+        document.getElementById('earningPage').classList.add('active');
+        
+        // Activate earning icon
+        const earningIcons = document.querySelectorAll('[onclick*="switchPage(\'earning\')"], [onclick*="switchPageFixed(\'earning\')"]');
+        if (earningIcons.length > 0) {
+            earningIcons[0].classList.add('active');
+        }
+        
+        document.querySelector('.container').classList.add('hidden');
+    }
+}
+
+function reinitializeEventListeners() {
+    console.log("🔄 Reinitializing event listeners...");
+    
+    // Remove old listeners first
+    if (elements.mineBtn) {
+        elements.mineBtn.removeEventListener('click', minePoints);
+        elements.mineBtn.addEventListener('click', minePoints);
+    }
+    
+    if (elements.copyBtn) {
+        elements.copyBtn.removeEventListener('click', copyReferralLink);
+        elements.copyBtn.addEventListener('click', copyReferralLink);
+    }
+    
+    if (elements.shareBtn) {
+        elements.shareBtn.removeEventListener('click', shareOnTelegram);
+        elements.shareBtn.addEventListener('click', shareOnTelegram);
+    }
+    
+    console.log("✅ Event listeners reinitialized");
+}
+
+// ============================================
 // Utility Functions
 // ============================================
 
@@ -906,7 +1052,7 @@ function showMessage(text, type = 'info') {
         display: flex;
         align-items: center;
         gap: 10px;
-        z-index: 1000;
+        z-index: 2000;
         opacity: 0;
         transition: all 0.3s ease;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -932,86 +1078,12 @@ function showMessage(text, type = 'info') {
 }
 
 // ============================================
-// Helper Functions for HTML buttons
-// ============================================
-
-function showHelp() {
-    const helpMessage = `
-        <div style="text-align: left; line-height: 1.8; padding: 20px;">
-            <h3 style="color: #3b82f6; margin-bottom: 15px;">🧭 How VIP Mining Works</h3>
-            
-            <p><strong>⛏️ Mining Points:</strong></p>
-            <p>• Click the Mine button every 5 seconds</p>
-            <p>• Earn points based on your rank</p>
-            <p>• Higher ranks = more points per click</p>
-            
-            <p><strong>👥 Referral System:</strong></p>
-            <p>1. Share your unique referral link</p>
-            <p>2. When friend joins, both get +25 points</p>
-            <p>3. Track your referrals in statistics</p>
-            
-            <p><strong>💾 Data Saving:</strong></p>
-            <p>• Your progress saves automatically</p>
-            <p>• Works offline (local storage)</p>
-            <p>• Syncs with cloud when online</p>
-        </div>
-    `;
-    
-    showMessage('Opening help guide', 'info');
-    setTimeout(() => {
-        alert(helpMessage);
-    }, 500);
-}
-
-function showStatistics() {
-    const lastMineTime = userData.lastMineTime ? 
-        new Date(userData.lastMineTime).toLocaleTimeString() : 
-        'Not started';
-    
-    const stats = `
-        📊 <strong>Your Statistics</strong>
-        
-        💰 Balance: ${userData.balance} points
-        👥 Referrals: ${userData.referrals}
-        📈 Total Earned: ${userData.totalEarned} points
-        🏆 Rank: ${userData.rank}
-        🎯 Referral Earnings: ${userData.referralEarnings} points
-        🔗 Your Code: ${userData.referralCode || 'Generating...'}
-        ⏳ Last Mine: ${lastMineTime}
-        💾 User ID: ${userData.userId}
-    `;
-    
-    showMessage('Opening statistics', 'info');
-    setTimeout(() => {
-        alert(stats);
-    }, 500);
-}
-
-function refreshPage() {
-    if (confirm('🔄 Refresh page?\n\nYour progress is automatically saved.')) {
-        location.reload();
-    }
-}
-
-// ============================================
 // Application Startup
 // ============================================
 
-// Check cooldown timer every second
+// Check cooldown and update belt every second
 setInterval(() => {
-    if (userData.lastMineTime > 0) {
-        const timeSinceLastMine = Date.now() - userData.lastMineTime;
-        if (timeSinceLastMine < CONFIG.MINE_COOLDOWN) {
-            const secondsLeft = Math.ceil((CONFIG.MINE_COOLDOWN - timeSinceLastMine) / 1000);
-            if (elements.cooldownTimer) {
-                elements.cooldownTimer.textContent = `${secondsLeft}s`;
-            }
-        } else {
-            if (elements.cooldownTimer) {
-                elements.cooldownTimer.textContent = '';
-            }
-        }
-    }
+    updateEnergyBelt();
 }, 1000);
 
 // Auto-save every 30 seconds as backup
@@ -1042,9 +1114,9 @@ window.showMessage = showMessage;
 window.generateReferralLink = generateReferralLink;
 window.processReferral = processReferral;
 window.saveUserData = saveUserData;
-window.showHelp = showHelp;
-window.showStatistics = showStatistics;
-window.refreshPage = refreshPage;
+window.updateWalletBalanceDirect = updateWalletBalanceDirect;
+window.switchPageFixed = switchPageFixed;
+window.reinitializeEventListeners = reinitializeEventListeners;
 
 // Debug function
 window.debugStorage = function() {
@@ -1061,8 +1133,7 @@ window.debugStorage = function() {
         console.log("No data saved for current user");
     }
     
-    // Show all vip_mining keys
-    console.log("\nAll VIP Mining keys in localStorage:");
+    // Show all vip_mining keys in localStorage
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.includes('vip_mining')) {
@@ -1073,3 +1144,4 @@ window.debugStorage = function() {
 };
 
 console.log("🎮 VIP Mining App loaded successfully");
+console.log("✅ Energy belt system activated (250 points every 4 hours)");
