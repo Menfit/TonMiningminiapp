@@ -24,15 +24,15 @@
 <body>
     <!-- Main Home Page -->
     <div class="container" id="homePage">
-        <!-- Header Section -->
-        <header class="app-header">
+        <!-- Header Section - Compact Version -->
+        <header class="app-header compact">
             <div class="logo">
                 <i class="fas fa-gem"></i>
                 <h1>VIP Mining</h1>
             </div>
-            <div class="user-section" id="userSection">
+            <div class="user-section compact" id="userSection">
                 <div class="user-avatar" id="userAvatar">U</div>
-                <div class="user-info">
+                <div class="user-info compact">
                     <div class="username" id="username">Loading...</div>
                     <div class="user-id" id="userId">ID: ---</div>
                 </div>
@@ -59,30 +59,39 @@
             </div>
         </div>
 
-        <!-- Mining Section -->
+        <!-- Mining Section - UPDATED -->
         <div class="mining-section">
             <div class="mining-header">
                 <h3><i class="fas fa-hard-hat"></i> Mining Station</h3>
                 <div class="mining-power" id="miningPower">
-                    <i class="fas fa-bolt"></i> Power: 10/hour
+                    <i class="fas fa-bolt"></i> Yield: 250 points/4h
                 </div>
             </div>
+            
             <button class="mine-btn" id="mineBtn">
                 <div class="mine-icon">
                     <i class="fas fa-hammer"></i>
                 </div>
                 <div class="mine-text">
-                    <div class="mine-title">Start Mining</div>
-                    <div class="mine-reward">+<span id="rewardAmount">1</span> point</div>
+                    <div class="mine-title">Claim Your Wealth</div>
+                    <div class="mine-reward">+<span id="rewardAmount">250</span> points</div>
+                    <div class="mine-subtitle">Every 4 hours</div>
                 </div>
                 <div class="mine-cooldown" id="cooldownTimer"></div>
             </button>
+            
+            <!-- Energy Belt Added -->
+            <div class="energy-belt" id="energyBelt">
+                <div class="belt-fill" id="beltFill"></div>
+                <div class="belt-knob" id="beltKnob"></div>
+            </div>
+            
             <div class="mining-tip">
-                <i class="fas fa-lightbulb"></i> Click every 5 seconds for maximum profit
+                <i class="fas fa-lightbulb"></i> Returns automatically every 4 hours
             </div>
         </div>
 
-        <!-- Referral System -->
+        <!-- Referral System - Simplified -->
         <div class="referral-section">
             <div class="section-header">
                 <h3><i class="fas fa-share-alt"></i> Referral Program</h3>
@@ -106,7 +115,7 @@
                 </div>
             </div>
 
-            <!-- Referral Link -->
+            <!-- Referral Link - Simplified -->
             <div class="referral-link-container">
                 <div class="input-group">
                     <div class="input-icon">
@@ -125,44 +134,13 @@
                     <button class="action-btn" id="shareBtn">
                         <i class="fab fa-telegram"></i> Share on Telegram
                     </button>
-                    <button class="action-btn secondary" id="whatsappBtn">
-                        <i class="fab fa-whatsapp"></i> Share on WhatsApp
-                    </button>
                 </div>
             </div>
 
-            <!-- How it Works -->
-            <div class="referral-info">
-                <h4><i class="fas fa-info-circle"></i> How Referral System Works?</h4>
-                <div class="info-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <strong>Share Your Unique Link</strong>
-                            <p>Copy and share the link above with your friends</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <strong>Friend Opens Mini App</strong>
-                            <p>They click the link and app opens directly in Telegram</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <strong>Get Automatic Rewards</strong>
-                            <p>You receive +25 points immediately</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Referral Note -->
-            <div class="referral-note">
-                <i class="fas fa-exclamation-circle"></i>
-                <span>Important: Link opens the Mini App directly, not just the bot!</span>
+            <!-- Simple Referral Message -->
+            <div class="referral-info simple">
+                <h4><i class="fas fa-info-circle"></i> Share Your Unique Link</h4>
+                <p>Copy and share your referral link to get +25 points</p>
             </div>
         </div>
 
@@ -190,25 +168,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-links">
-                <a href="javascript:void(0)" class="footer-link" id="helpBtn">
-                    <i class="fas fa-question-circle"></i> Help
-                </a>
-                <a href="javascript:void(0)" class="footer-link" id="statsBtn">
-                    <i class="fas fa-chart-bar"></i> Statistics
-                </a>
-                <a href="javascript:void(0)" class="footer-link" id="refreshBtn">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </a>
-            </div>
-            <div class="footer-copyright">
-                <p>Powered by @VIPMainingPROBot • VIP Mining © 2024</p>
-                <p id="connectionStatus">🔵 Connecting...</p>
-            </div>
-        </footer>
     </div>
 
     <!-- =========================================== -->
@@ -218,7 +177,7 @@
     <!-- Wallet Page -->
     <div id="walletPage" class="page hidden">
         <div class="page-header">
-            <div class="back-btn" onclick="switchPage('home')">
+            <div class="back-btn" onclick="window.switchPageFixed('home'); return false;">
                 <i class="fas fa-arrow-left"></i>
             </div>
             <h2><i class="fas fa-wallet"></i> Wallet</h2>
@@ -269,7 +228,7 @@
     <!-- Earning Page -->
     <div id="earningPage" class="page hidden">
         <div class="page-header">
-            <div class="back-btn" onclick="switchPage('home')">
+            <div class="back-btn" onclick="window.switchPageFixed('home'); return false;">
                 <i class="fas fa-arrow-left"></i>
             </div>
             <h2><i class="fas fa-chart-line"></i> Earning</h2>
@@ -306,19 +265,19 @@
     </div>
 
     <!-- =========================================== -->
-    <!-- 🆕 Bottom Navigation -->
+    <!-- 🆕 Bottom Navigation - FIXED VERSION -->
     <!-- =========================================== -->
 
     <div id="bottomNav" class="bottom-nav">
-        <div class="nav-item active" onclick="switchPage('home')">
+        <div class="nav-item active" onclick="switchToPage('home'); return false;">
             <i class="fas fa-home"></i>
             <span>Home</span>
         </div>
-        <div class="nav-item" onclick="switchPage('earning')">
+        <div class="nav-item" onclick="switchToPage('earning'); return false;">
             <i class="fas fa-chart-line"></i>
             <span>Earning</span>
         </div>
-        <div class="nav-item" onclick="switchPage('wallet')">
+        <div class="nav-item" onclick="switchToPage('wallet'); return false;">
             <i class="fas fa-wallet"></i>
             <span>Wallet</span>
         </div>
@@ -327,222 +286,227 @@
     <!-- JavaScript Files -->
     <script src="app.js"></script>
     
-    <!-- Helper Functions -->
+    <!-- ULTIMATE NAVIGATION FIX -->
     <script>
-        // Switch between pages - enhanced
-        function switchPage(pageName) {
-            console.log("🔄 Switching to page:", pageName);
+        // ============================================
+        // ULTIMATE NAVIGATION SYSTEM - SIMPLE & RELIABLE
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🎯 Ultimate navigation system loading...");
+            
+            // Setup navigation
+            setupNavigation();
+            
+            // Initialize home page
+            setTimeout(initializeHomePage, 100);
+        });
+        
+        function setupNavigation() {
+            console.log("🔄 Setting up navigation...");
+            
+            // Get all navigation items
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                // Remove any existing onclick
+                item.onclick = null;
+                
+                // Add fresh click listener
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Get page name
+                    const text = this.querySelector('span').textContent.toLowerCase();
+                    let pageName = 'home';
+                    
+                    if (text.includes('wallet')) pageName = 'wallet';
+                    else if (text.includes('earning')) pageName = 'earning';
+                    
+                    console.log("🚀 Switching to page:", pageName);
+                    switchToPage(pageName);
+                    
+                    // Click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    return false;
+                });
+            });
+            
+            console.log("✅ Navigation setup complete");
+        }
+        
+        function switchToPage(pageName) {
+            console.log("🔄 Page switch to:", pageName);
+            
+            // Get all pages
+            const allPages = document.querySelectorAll('.page, .container');
             
             // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
+            allPages.forEach(page => {
                 page.classList.remove('active');
                 page.classList.add('hidden');
             });
             
-            // Remove active from all icons
+            // Remove active from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            // Show requested page and activate icon
+            // Show requested page
             if (pageName === 'home') {
-                document.querySelector('.container').classList.remove('hidden');
-                document.querySelector('.container').classList.add('active');
-                document.querySelector('[onclick="switchPage(\'home\')"]').classList.add('active');
-            } else if (pageName === 'wallet') {
-                document.getElementById('walletPage').classList.remove('hidden');
-                document.getElementById('walletPage').classList.add('active');
-                document.querySelector('[onclick="switchPage(\'wallet\')"]').classList.add('active');
-                document.querySelector('.container').classList.add('hidden');
-                // Update wallet balance
-                updateWalletBalance();
-            } else if (pageName === 'earning') {
-                document.getElementById('earningPage').classList.remove('hidden');
-                document.getElementById('earningPage').classList.add('active');
-                document.querySelector('[onclick="switchPage(\'earning\')"]').classList.add('active');
-                document.querySelector('.container').classList.add('hidden');
-            }
-        }
-
-        // Wait for app.js to load first
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit to ensure app.js is loaded
-            setTimeout(function() {
-                // Setup control buttons
-                setupControlButtons();
-                
-                // Check for referral in URL
-                checkUrlForReferral();
-                
-                // Initialize pages
-                initializePages();
-                
-                // Setup bottom navigation
-                setupBottomNav();
-            }, 1000);
-        });
-        
-        function setupControlButtons() {
-            // Help button
-            const helpBtn = document.getElementById('helpBtn');
-            if (helpBtn) {
-                helpBtn.addEventListener('click', showHelp);
-            }
-            
-            // Statistics button
-            const statsBtn = document.getElementById('statsBtn');
-            if (statsBtn) {
-                statsBtn.addEventListener('click', showStatistics);
-            }
-            
-            // Refresh button
-            const refreshBtn = document.getElementById('refreshBtn');
-            if (refreshBtn) {
-                refreshBtn.addEventListener('click', refreshPage);
-            }
-        }
-        
-        function checkUrlForReferral() {
-            // Check for referral code in URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const referrerCode = urlParams.get('startapp') || 
-                               urlParams.get('ref') || 
-                               urlParams.get('start');
-            
-            if (referrerCode) {
-                console.log("🔗 URL referral code detected:", referrerCode);
-                
-                // Save to localStorage for later processing
-                localStorage.setItem('pending_referral', referrerCode);
-                
-                // If app is ready, process referral immediately
-                if (window.userData && window.userData.userId && window.processReferral) {
-                    setTimeout(function() {
-                        window.processReferral(referrerCode);
-                    }, 1500);
+                const homePage = document.querySelector('.container');
+                if (homePage) {
+                    homePage.classList.remove('hidden');
+                    homePage.classList.add('active');
                 }
+                
+                // Activate home nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.querySelector('span').textContent.toLowerCase().includes('home')) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // 🔥 CRITICAL: Reattach ALL event listeners
+                setTimeout(reattachAllEventListeners, 150);
+                
+            } else if (pageName === 'wallet') {
+                const walletPage = document.getElementById('walletPage');
+                if (walletPage) {
+                    walletPage.classList.remove('hidden');
+                    walletPage.classList.add('active');
+                }
+                
+                // Activate wallet nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.querySelector('span').textContent.toLowerCase().includes('wallet')) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Update wallet balance
+                if (window.updateWalletBalanceDirect) {
+                    window.updateWalletBalanceDirect();
+                }
+                
+            } else if (pageName === 'earning') {
+                const earningPage = document.getElementById('earningPage');
+                if (earningPage) {
+                    earningPage.classList.remove('hidden');
+                    earningPage.classList.add('active');
+                }
+                
+                // Activate earning nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.querySelector('span').textContent.toLowerCase().includes('earning')) {
+                        item.classList.add('active');
+                    }
+                });
             }
         }
         
-        // Function for new pages
-        function initializePages() {
-            console.log("📱 Initializing pages...");
-            // Home page shows by default
+        function reattachAllEventListeners() {
+            console.log("🔧 Reattaching ALL event listeners...");
+            
+            // 1. Mine Button
+            const mineBtn = document.getElementById('mineBtn');
+            if (mineBtn) {
+                // Clone to remove old listeners
+                const newMineBtn = mineBtn.cloneNode(true);
+                mineBtn.parentNode.replaceChild(newMineBtn, mineBtn);
+                
+                // Add fresh listener
+                document.getElementById('mineBtn').addEventListener('click', function() {
+                    if (window.minePoints) {
+                        window.minePoints();
+                    }
+                });
+                console.log("✅ Mine button reattached");
+            }
+            
+            // 2. Copy Button
+            const copyBtn = document.getElementById('copyBtn');
+            if (copyBtn) {
+                const newCopyBtn = copyBtn.cloneNode(true);
+                copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+                
+                document.getElementById('copyBtn').addEventListener('click', function() {
+                    if (window.copyReferralLink) {
+                        window.copyReferralLink();
+                    }
+                });
+                console.log("✅ Copy button reattached");
+            }
+            
+            // 3. Share Button
+            const shareBtn = document.getElementById('shareBtn');
+            if (shareBtn) {
+                const newShareBtn = shareBtn.cloneNode(true);
+                shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+                
+                document.getElementById('shareBtn').addEventListener('click', function() {
+                    if (window.shareOnTelegram) {
+                        window.shareOnTelegram();
+                    }
+                });
+                console.log("✅ Share button reattached");
+            }
+            
+            // 4. Back Buttons
+            document.querySelectorAll('.back-btn').forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', function() {
+                    switchToPage('home');
+                });
+            });
+            console.log("✅ Back buttons reattached");
+            
+            console.log("✅ ALL event listeners reattached successfully");
         }
         
-        // Update wallet balance
-        function updateWalletBalance() {
-            // Update points balance in wallet page
-            const walletPoints = document.getElementById('walletPoints');
-            if (walletPoints && window.userData && window.userData.balance !== undefined) {
-                walletPoints.textContent = window.userData.balance.toLocaleString();
-                console.log("💰 Wallet points updated:", window.userData.balance);
+        function initializeHomePage() {
+            // Make sure home page is active
+            const homePage = document.querySelector('.container');
+            if (homePage) {
+                homePage.classList.remove('hidden');
+                homePage.classList.add('active');
             }
+            
+            // Activate home nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const text = item.querySelector('span').textContent.toLowerCase();
+                if (text.includes('home')) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Initial reattach
+            setTimeout(reattachAllEventListeners, 200);
         }
         
         function showComingSoon() {
             if (window.showMessage) {
                 window.showMessage('🚀 This feature is under development!', 'info');
             } else {
-                alert('🚀 This feature is under development!');
+                console.log('🚀 This feature is under development!');
             }
         }
         
-        function showHelp() {
-            const helpMessage = `
-                <div style="text-align: left; line-height: 1.8; padding: 20px;">
-                    <h3 style="color: #3b82f6; margin-bottom: 15px;">🧭 How VIP Mining Works</h3>
-                    
-                    <p><strong>⛏️ Mining Points:</strong></p>
-                    <p>• Click the Mine button every 5 seconds</p>
-                    <p>• Earn points based on your rank</p>
-                    <p>• Higher ranks = more points per click</p>
-                    
-                    <p><strong>👥 Referral System:</strong></p>
-                    <p>1. Share your unique referral link</p>
-                    <p>2. When friend joins, both get +25 points</p>
-                    <p>3. Track your referrals in statistics</p>
-                    
-                    <p><strong>🏆 Ranking System:</strong></p>
-                    <p>• Beginner: 1 point/click</p>
-                    <p>• Professional: 2 points/click</p>
-                    <p>• Expert: 3 points/click</p>
-                    <p>• VIP: 5 points/click</p>
-                    <p>• Legend: 10 points/click</p>
-                    
-                    <p><strong>📱 Navigation:</strong></p>
-                    <p>🏠 Home: Mining and referral page</p>
-                    <p>💰 Earning: Upcoming tasks and offers</p>
-                    <p>💳 Wallet: Manage and transfer balance</p>
-                </div>
-            `;
-            
-            if (window.showMessage) {
-                window.showMessage('Opening help guide', 'info');
-                setTimeout(() => {
-                    alert(helpMessage);
-                }, 500);
-            } else {
-                alert(helpMessage);
-            }
-        }
-        
-        function showStatistics() {
-            if (window.userData) {
-                const lastMineTime = window.userData.lastMineTime ? 
-                    new Date(window.userData.lastMineTime).toLocaleTimeString() : 
-                    'Not started';
-                
-                const stats = `
-                    📊 <strong>Your Statistics</strong>
-                    ------------------------------------
-                    💰 Balance: ${window.userData.balance} points
-                    👥 Referrals: ${window.userData.referrals}
-                    📈 Total Earned: ${window.userData.totalEarned} points
-                    🏆 Rank: ${window.userData.rank}
-                    🎯 Referral Earnings: ${window.userData.referralEarnings} points
-                    🔗 Your Code: ${window.userData.referralCode || 'Generating...'}
-                    ⏳ Last Mine: ${lastMineTime}
-                    💾 User ID: ${window.userData.userId}
-                `;
-                
-                if (window.showMessage) {
-                    window.showMessage('Opening statistics', 'info');
-                    setTimeout(() => {
-                        alert(stats);
-                    }, 500);
-                } else {
-                    alert(stats);
-                }
-            }
-        }
-        
-        function refreshPage() {
-            if (confirm('🔄 Refresh page?\n\nYour progress is automatically saved.')) {
-                location.reload();
-            }
-        }
-        
-        // Setup bottom navigation
-        function setupBottomNav() {
-            // Add effects to icons
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    // Simple click effect
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 150);
-                });
-            });
-        }
-        
-        // Make switchPage available globally
-        window.switchPage = switchPage;
+        // Make functions available globally
+        window.switchPageFixed = switchToPage;
+        window.reinitializeEventListeners = reattachAllEventListeners;
         window.showComingSoon = showComingSoon;
-        window.updateWalletBalance = updateWalletBalance;
         
-        console.log("✅ Navigation system initialized");
+        console.log("✅ Ultimate navigation system ready");
     </script>
 </body>
 </html>
