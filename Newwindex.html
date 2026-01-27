@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Mining - Telegram Mini App</title>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛏️</text></svg>">
+</head>
+<body>
+    <!-- Main Home Page -->
+    <div class="container" id="homePage">
+        <!-- Header Section - Compact Version -->
+        <header class="app-header compact">
+            <div class="logo">
+                <i class="fas fa-gem"></i>
+                <div>
+                    <h1>VIP Mining Wealth</h1>
+                    <div class="token-price" id="tokenPrice">1 MWH ≈ $0.001</div>
+                </div>
+            </div>
+            <div class="user-section compact" id="userSection">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info compact">
+                    <div class="username" id="username">Loading...</div>
+                    <div class="user-id" id="userId">ID: ---</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-header">
+                <span><i class="fas fa-wallet"></i> Your Balance</span>
+                <span class="rank-badge" id="rankBadge">Beginner</span>
+            </div>
+            <div class="balance-amount" id="balance">25</div>
+            <div class="balance-value">
+                <div class="balance-sub">MineWealth Tokens</div>
+                <div class="balance-usd" id="balanceUSD">≈ $0.025</div>
+            </div>
+            <div class="balance-stats">
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <span id="referrals">0 Referrals</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span id="totalEarned">25 MWH</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mining Section -->
+        <div class="mining-section">
+            <div class="mining-header">
+                <h3><i class="fas fa-hard-hat"></i> Mining Station</h3>
+                <div class="mining-power" id="miningPower">
+                    <i class="fas fa-bolt"></i> Yield: 250 MWH/4h
+                </div>
+            </div>
+            
+            <button class="mine-btn" id="mineBtn">
+                <div class="mine-icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <div class="mine-text">
+                    <div class="mine-title">Claim Your Wealth</div>
+                    <div class="mine-reward">+<span id="rewardAmount">250</span> MWH</div>
+                    <div class="mine-subtitle">Every 4 hours</div>
+                </div>
+                <div class="mine-cooldown" id="cooldownTimer"></div>
+            </button>
+            
+            <div class="next-rank-bonus" id="nextRankBonus">
+                +120 MWH bonus on upgrade
+            </div>
+            
+            <div class="energy-belt" id="energyBelt">
+                <div class="belt-fill" id="beltFill"></div>
+                <div class="belt-knob" id="beltKnob"></div>
+            </div>
+            
+            <div class="mining-tip">
+                <i class="fas fa-lightbulb"></i> Returns automatically every 4 hours
+            </div>
+        </div>
+
+        <!-- Referral System -->
+        <div class="referral-section">
+            <div class="section-header">
+                <h3><i class="fas fa-share-alt"></i> Referral Program</h3>
+                <div class="referral-bonus">
+                    <i class="fas fa-gift"></i> +50 MWH per referral
+                </div>
+            </div>
+            
+            <div class="referral-stats">
+                <div class="ref-stat">
+                    <div class="ref-stat-value" id="refCount">0</div>
+                    <div class="ref-stat-label">Total Referrals</div>
+                </div>
+                <div class="ref-stat">
+                    <div class="ref-stat-value" id="refEarned">0</div>
+                    <div class="ref-stat-label">MWH Earned</div>
+                </div>
+                <div class="ref-stat">
+                    <div class="ref-stat-value" id="refRank">Beginner</div>
+                    <div class="ref-stat-label">Your Rank</div>
+                </div>
+            </div>
+
+            <div class="referral-link-container">
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <input type="text" 
+                           class="referral-input" 
+                           id="referralLink" 
+                           value="Generating referral link..." 
+                           readonly>
+                    <button class="copy-btn" id="copyBtn">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <div class="referral-actions">
+                    <button class="action-btn" id="shareBtn">
+                        <i class="fab fa-telegram"></i> Share on Telegram
+                    </button>
+                </div>
+            </div>
+
+            <div class="referral-info simple">
+                <h4><i class="fas fa-info-circle"></i> Share Your Unique Link</h4>
+                <p>Get +50 MWH for every friend who joins using your link</p>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h4><i class="fas fa-trophy"></i> Rank Progress</h4>
+                <div class="next-rank" id="nextRank">Next: Professional (5,000 MWH)</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-stats">
+                <div class="progress-stat">
+                    <span>Current:</span>
+                    <span id="currentPoints">25 MWH</span>
+                </div>
+                <div class="progress-stat">
+                    <span>Target:</span>
+                    <span id="targetPoints">5,000 MWH</span>
+                </div>
+                <div class="progress-stat">
+                    <span>Remaining:</span>
+                    <span id="remainingPoints">4,975 MWH</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- App Footer - سيتم حذفه في CSS -->
+        <div class="app-footer">
+            <div class="footer-links">
+                <a href="#" class="footer-link" onclick="showComingSoon()">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+                <a href="#" class="footer-link" onclick="showComingSoon()">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Terms</span>
+                </a>
+                <a href="#" class="footer-link" onclick="showComingSoon()">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Privacy</span>
+                </a>
+            </div>
+            <div class="footer-copyright">
+                <p>VIP Mining Wealth © 2024</p>
+                <p id="connectionStatus">🟡 Connecting...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- Wallet Page - Professional Design -->
+    <!-- =========================================== -->
+
+    <div id="walletPage" class="page hidden">
+        <div class="page-header">
+            <div class="back-btn" onclick="switchToPage('home')">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h2><i class="fas fa-wallet"></i> MWH Wallet</h2>
+        </div>
+        
+        <div class="wallet-container">
+            <!-- Total Balance - Compact Version -->
+            <div class="total-balance-card compact">
+                <div class="total-balance-label">
+                    <i class="fas fa-chart-line"></i> Assets
+                </div>
+                <div class="total-balance-amount" id="totalBalanceUSD">$0.00</div>
+                <div class="total-balance-sub">Total Balance</div>
+            </div>
+
+            <!-- Quick Actions - Compact Version -->
+            <div class="wallet-quick-actions compact">
+                <div class="action-title">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </div>
+                <div class="actions-grid">
+                    <div class="quick-action" onclick="openSwapModal('MWH')">
+                        <div class="action-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="action-text">Swap MWH</div>
+                    </div>
+                    <!-- تعديل زر Deposit BNB ليكون Deposit USDT في الكويق اكشنز -->
+                    <div class="quick-action" onclick="openDepositModal('USDT')">
+                        <div class="action-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="action-text">Deposit USDT</div>
+                    </div>
+                    <div class="quick-action" onclick="openWithdrawalModal()">
+                        <div class="action-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="action-text">Withdraw USDT</div>
+                    </div>
+                    <div class="quick-action" onclick="showTransactionHistory()">
+                        <div class="action-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="action-text">History</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cryptocurrency Cards -->
+            <div class="crypto-grid">
+                <!-- MWH Card -->
+                <div class="crypto-card" id="mwhCard">
+                    <div class="crypto-header">
+                        <div class="crypto-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="crypto-title">
+                            <h3>MWH Token</h3>
+                            <div class="crypto-symbol">MineWealth</div>
+                        </div>
+                        <div class="crypto-price">
+                            1 MWH ≈ $0.001
+                        </div>
+                    </div>
+                    <div class="crypto-balance">
+                        <div class="balance-amount" id="walletMWH">0</div>
+                        <div class="balance-currency">MWH</div>
+                    </div>
+                    <div class="crypto-value" id="walletMWHValue">
+                        ≈ $0.00
+                    </div>
+                    <div class="crypto-actions">
+                        <button class="action-btn-small" onclick="openSwapModal('MWH')">
+                            <i class="fas fa-exchange-alt"></i> Swap
+                        </button>
+                        <button class="action-btn-small disabled" onclick="showComingSoon()">
+                            <i class="fas fa-download"></i> Receive
+                        </button>
+                    </div>
+                </div>
+
+                <!-- USDT Card -->
+                <div class="crypto-card" id="usdtCard">
+                    <div class="crypto-header">
+                        <div class="crypto-icon usdt">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="crypto-title">
+                            <h3>Tether</h3>
+                            <div class="crypto-symbol">USDT</div>
+                        </div>
+                        <div class="crypto-price">
+                            1 USDT ≈ $1.00
+                        </div>
+                    </div>
+                    <div class="crypto-balance">
+                        <div class="balance-amount" id="walletUSDT">0</div>
+                        <div class="balance-currency">USDT</div>
+                    </div>
+                    <div class="crypto-value" id="walletUSDTValue">
+                        ≈ $0.00
+                    </div>
+                    <div class="crypto-withdrawal-info" id="usdtWithdrawalInfo" style="display: none;">
+                        <div class="withdrawal-minimum">
+                            <i class="fas fa-info-circle"></i>
+                            Min withdrawal: 50 USDT
+                        </div>
+                        <div class="withdrawal-fee" id="usdtWithdrawalFee" style="display: none;">
+                            <i class="fas fa-gas-pump"></i>
+                            Network fee: 0.0005 BNB
+                        </div>
+                    </div>
+                    <div class="crypto-actions">
+                        <button class="action-btn-small" onclick="openSwapModal('USDT')">
+                            <i class="fas fa-exchange-alt"></i> Swap
+                        </button>
+                        <!-- زر الإيداع يعمل الآن -->
+                        <button class="action-btn-small" onclick="openDepositModal('USDT')">
+                            <i class="fas fa-download"></i> Deposit
+                        </button>
+                        <button class="action-btn-small withdraw-btn" id="withdrawUSDTBtn" onclick="openWithdrawalModal()">
+                            <i class="fas fa-upload"></i> Withdraw
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BNB Card -->
+                <div class="crypto-card" id="bnbCard">
+                    <div class="crypto-header">
+                        <div class="crypto-icon bnb">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="crypto-title">
+                            <h3>Binance Coin</h3>
+                            <div class="crypto-symbol">BNB</div>
+                        </div>
+                        <div class="crypto-price">
+                            1 BNB ≈ $875
+                        </div>
+                    </div>
+                    <div class="crypto-balance">
+                        <div class="balance-amount" id="walletBNB">0.0000</div>
+                        <div class="balance-currency">BNB</div>
+                    </div>
+                    <div class="crypto-value" id="walletBNBValue">
+                        ≈ $0.00
+                    </div>
+                    <div class="crypto-actions">
+                        <!-- زر الإيداع يعمل الآن -->
+                        <button class="action-btn-small" onclick="openDepositModal('BNB')">
+                            <i class="fas fa-download"></i> Deposit
+                        </button>
+                        <button class="action-btn-small" onclick="openSwapModal('BNB')">
+                            <i class="fas fa-exchange-alt"></i> Swap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TON Card -->
+                <div class="crypto-card" id="tonCard">
+                    <div class="crypto-header">
+                        <div class="crypto-icon ton">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="crypto-title">
+                            <h3>Toncoin</h3>
+                            <div class="crypto-symbol">TON</div>
+                        </div>
+                        <div class="crypto-price">
+                            1 TON ≈ $1.6
+                        </div>
+                    </div>
+                    <div class="crypto-balance">
+                        <div class="balance-amount" id="walletTON">0</div>
+                        <div class="balance-currency">TON</div>
+                    </div>
+                    <div class="crypto-value" id="walletTONValue">
+                        ≈ $0.00
+                    </div>
+                    <div class="crypto-actions">
+                        <button class="action-btn-small disabled" onclick="showComingSoon()">
+                            <i class="fas fa-download"></i> Deposit
+                        </button>
+                        <button class="action-btn-small disabled" onclick="showComingSoon()">
+                            <i class="fas fa-exchange-alt"></i> Swap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ETH Card -->
+                <div class="crypto-card" id="ethCard">
+                    <div class="crypto-header">
+                        <div class="crypto-icon eth">
+                            <i class="fab fa-ethereum"></i>
+                        </div>
+                        <div class="crypto-title">
+                            <h3>Ethereum</h3>
+                            <div class="crypto-symbol">ETH</div>
+                        </div>
+                        <div class="crypto-price">
+                            1 ETH ≈ $3,000.00
+                        </div>
+                    </div>
+                    <div class="crypto-balance">
+                        <div class="balance-amount" id="walletETH">0.0000</div>
+                        <div class="balance-currency">ETH</div>
+                    </div>
+                    <div class="crypto-value" id="walletETHValue">
+                        ≈ $0.00
+                    </div>
+                    <div class="crypto-actions">
+                        <button class="action-btn-small disabled" onclick="showComingSoon()">
+                            <i class="fas fa-download"></i> Deposit
+                        </button>
+                        <button class="action-btn-small disabled" onclick="showComingSoon()">
+                            <i class="fas fa-exchange-alt"></i> Swap
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Info -->
+            <div class="wallet-info-card">
+                <div class="info-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h4>Wallet Information</h4>
+                </div>
+                <div class="info-content">
+                    <div class="info-item">
+                        <span>Minimum Withdrawal:</span>
+                        <span class="info-value">50 USDT</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Swap Rate (MWH to USDT):</span>
+                        <span class="info-value">1,000 MWH = 1 USDT</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Swap Rate (BNB to MWH):</span>
+                        <span class="info-value">1 BNB = 870,000 MWH</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Network:</span>
+                        <span class="info-value">BEP20 (BNB Chain)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- Earning Page -->
+    <!-- =========================================== -->
+
+    <div id="earningPage" class="page hidden">
+        <div class="page-header">
+            <div class="back-btn" onclick="switchToPage('home')">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h2><i class="fas fa-chart-line"></i> Earning</h2>
+        </div>
+        
+        <div class="earning-content">
+            <div class="coming-soon">
+                <div class="rocket-animation">
+                    🚀
+                </div>
+                <h3>Coming Soon!</h3>
+                <p>Working on new earning features</p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-ad"></i>
+                        <span>Watch Ads</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-tasks"></i>
+                        <span>Daily Tasks</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-gift"></i>
+                        <span>Exclusive Offers</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-trophy"></i>
+                        <span>Contests & Rewards</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================== -->
+    <!-- Bottom Navigation -->
+    <!-- =========================================== -->
+
+    <div id="bottomNav" class="bottom-nav">
+        <div class="nav-item active" onclick="switchToPage('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchToPage('earning')">
+            <i class="fas fa-chart-line"></i>
+            <span>Earning</span>
+        </div>
+        <div class="nav-item" onclick="switchToPage('wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Wallet</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="app.js"></script>
+    
+    <!-- Navigation System -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🎯 Navigation system loading...");
+            setupNavigation();
+            setTimeout(initializeHomePage, 100);
+        });
+        
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                item.onclick = null;
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const text = this.querySelector('span').textContent.toLowerCase();
+                    let pageName = 'home';
+                    
+                    if (text.includes('wallet')) pageName = 'wallet';
+                    else if (text.includes('earning')) pageName = 'earning';
+                    
+                    console.log("🚀 Switching to page:", pageName);
+                    switchToPage(pageName);
+                    
+                    return false;
+                });
+            });
+            
+            console.log("✅ Navigation setup complete");
+        }
+        
+        function switchToPage(pageName) {
+            const allPages = document.querySelectorAll('.page, .container');
+            allPages.forEach(page => {
+                page.classList.remove('active');
+                page.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (pageName === 'home') {
+                const homePage = document.querySelector('.container');
+                if (homePage) {
+                    homePage.classList.remove('hidden');
+                    homePage.classList.add('active');
+                }
+                
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.querySelector('span').textContent.toLowerCase().includes('home')) {
+                        item.classList.add('active');
+                    }
+                });
+                
+            } else if (pageName === 'wallet') {
+                const walletPage = document.getElementById('walletPage');
+                if (walletPage) {
+                    walletPage.classList.remove('hidden');
+                    walletPage.classList.add('active');
+                }
+                
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.querySelector('span').textContent.toLowerCase().includes('wallet')) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Update wallet UI when opened
+                if (window.updateWalletUI) {
+                    window.updateWalletUI();
+                }
+                
+            } else if (pageName === 'earning') {
+                const earningPage = document.getElementById('earningPage');
+                if (earningPage) {
+                    earningPage.classList.remove('hidden');
+                    earningPage.classList.add('active');
+                }
+                
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.querySelector('span').textContent.toLowerCase().includes('earning')) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        }
+        
+        function showTransactionHistory() {
+            if (window.showTransactionHistory) {
+                window.showTransactionHistory();
+            } else {
+                console.log('📭 Transaction history feature loading...');
+                setTimeout(() => {
+                    if (window.showTransactionHistory) {
+                        window.showTransactionHistory();
+                    } else {
+                        console.log('❌ Transaction history function not available');
+                    }
+                }, 500);
+            }
+        }
+        
+        function showComingSoon() {
+            if (window.showMessage) {
+                window.showMessage('🚀 This feature is under development!', 'info');
+            } else {
+                console.log('🚀 This feature is under development!');
+            }
+        }
+        
+        window.switchToPage = switchToPage;
+        window.showComingSoon = showComingSoon;
+        window.showTransactionHistory = showTransactionHistory;
+        
+        console.log("✅ Navigation system ready");
+    </script>
+</body>
+</html>
